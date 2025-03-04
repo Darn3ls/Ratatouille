@@ -1,5 +1,6 @@
 ﻿@page "/recipes"
 @using Ratatouille.Data
+@using Ratatouille.Data.Components
 
 
 <!-- Barra superiore / header -->
@@ -15,19 +16,7 @@
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
     @foreach (var ricetta in Recipe.GetRecipeList())
     {
-        <div class="col">
-            <div class="card h-100">
-                <div class="ratio ratio-1x1">
-                <img src="@ricetta.ImmagineUrl" class="card-img-top" style="object-fit: cover;" alt="@ricetta.Titolo" />
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">@ricetta.Titolo</h5>
-                    <p class="card-text">
-                        @ricetta.DescrizioneBreve
-                    </p>
-                </div>
-            </div>
-        </div>
+		<RecipeCard recipe="ricetta" />
     }
 </div>
 
