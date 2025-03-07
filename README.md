@@ -40,16 +40,3 @@
 
 
 
-Francesco Logli
-XR Manager
-francesco.logli@lutech.it
-+39 0521 669411
-
-
-
-WWW.LUTECH.GROUP
-Lutech SpA  •  Via Massimo Gorki, 30/32C, 20092 Cinisello Balsamo (MI), Italia
-
-P.IVA 02824320176 – Milano –  REA-MI 1666842
-
-
