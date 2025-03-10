@@ -1,6 +1,11 @@
-using Ratatouille.Components;
+﻿using Ratatouille.Components;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Ratatouille.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<RatatouilleContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("RatatouilleContext") ?? throw new InvalidOperationException("Connection string 'RatatouilleContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
