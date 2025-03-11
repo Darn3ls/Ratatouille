@@ -11,7 +11,7 @@ using Ratatouille.Data;
 namespace Ratatouille.Migrations
 {
     [DbContext(typeof(RatatouilleContext))]
-    [Migration("20250307154408_InitialCreate")]
+    [Migration("20250310111354_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

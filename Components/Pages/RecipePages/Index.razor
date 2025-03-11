@@ -1,0 +1,42 @@
+﻿@page "/recipes"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using Ratatouille.Models
+@using Ratatouille.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
+
+<PageTitle>Recipes</PageTitle>
+
+<!-- Barra superiore / header -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <h2>Ricette</h2>
+
+    <NavLink class="btn btn-warning" href="recipes/create">
+        <i class="bi bi-plus"></i> <!-- Icona di esempio con Bootstrap Icons -->
+        ADD NEW
+    </NavLink>
+</div>
+
+
+<!-- Griglia di card -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+    @foreach (var recipe in recipes)
+    {
+		<RecipeCard Recipe="@recipe" />
+    }
+</div>
+
+@code {
+    private RatatouilleContext context = default!;
+    private List<Recipe> recipes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+        recipes = await context.Recipe.ToListAsync();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

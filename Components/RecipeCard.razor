@@ -1,0 +1,25 @@
+﻿@using Ratatouille.Models
+
+@code {
+    [Parameter]
+    public Recipe Recipe { get; set; } = default!;
+}
+
+<div class="col">
+    <div class="card h-100">
+        <div class="ratio ratio-1x1">
+            <img src="@Recipe.ImageURL" class="card-img-top" style="object-fit: cover;" alt="@Recipe.Title" />
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">@Recipe.Title</h5>
+            <p class="card-text">
+                @Recipe.Description
+            </p>
+            <div>
+                <a href="@($"recipes/edit?id={Recipe.Id}")">Edit</a> |
+                <a href="@($"recipes/details?id={Recipe.Id}")">Details</a> |
+                <a href="@($"recipes/delete?id={Recipe.Id}")">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
