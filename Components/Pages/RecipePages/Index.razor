@@ -1,6 +1,6 @@
 ﻿@page "/recipes"
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Ratatouille.Models
 @using Ratatouille.Data
 @implements IAsyncDisposable
@@ -19,10 +19,19 @@
     </NavLink>
 </div>
 
+<!-- Campo ricerca -->
+<div>
+    <form action="/recipes" data-enhance>
+        <input type="search" name="TitleFilter" />
+        <input type="submit" value="Search" />
+    </form>
+</div>
+
+<br />
 
 <!-- Griglia di card -->
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-    @foreach (var recipe in recipes)
+    @foreach (var recipe in FilteredRecipes)
     {
 		<RecipeCard Recipe="@recipe" />
     }
@@ -39,4 +48,13 @@
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
+
+    [SupplyParameterFromQuery]
+    private string? TitleFilter { get; set; }
+
+    private IEnumerable<Recipe> FilteredRecipes => string.IsNullOrWhiteSpace(TitleFilter)
+        ? recipes
+        : recipes.Where(r => r.Title.Contains(TitleFilter, StringComparison.OrdinalIgnoreCase));
+
+
 }
