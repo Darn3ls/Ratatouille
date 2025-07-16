@@ -11,15 +11,15 @@ using Ratatouille.Data;
 namespace Ratatouille.Migrations
 {
     [DbContext(typeof(RatatouilleContext))]
-    [Migration("20250327163349_DataValidation")]
-    partial class DataValidation
+    [Migration("20250716115153_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);

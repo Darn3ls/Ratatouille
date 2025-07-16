@@ -37,14 +37,27 @@
     }
 </div>
 
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
 @code {
     private RatatouilleContext context = default!;
     private List<Recipe> recipes = new();
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-        recipes = await context.Recipe.ToListAsync();
+        try
+        {
+            context = DbFactory.CreateDbContext();
+            recipes = await context.Recipe.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
@@ -55,6 +68,4 @@
     private IEnumerable<Recipe> FilteredRecipes => string.IsNullOrWhiteSpace(TitleFilter)
         ? recipes
         : recipes.Where(r => r.Title.Contains(TitleFilter, StringComparison.OrdinalIgnoreCase));
-
-
 }
