@@ -8,36 +8,172 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 <PageTitle>Recipes</PageTitle>
 
 <!-- Barra superiore / header -->
 <div class="d-flex justify-content-between align-items-center mb-3">
-
-    <h2>Ricette</h2>
-
-    <NavLink class="btn btn-warning" href="recipes/create">
-        <i class="bi bi-plus"></i> <!-- Icona di esempio con Bootstrap Icons -->
-        ADD NEW
-    </NavLink>
+    <h2>Recipes</h2>
 </div>
 
-<!-- Campo ricerca -->
+<!-- Bottone Add Recipe fisso in basso a destra -->
+<NavLink class="recipe-create-btn-fixed" href="recipes/create" title="Aggiungi nuova ricetta">
+    <i class="fa-solid fa-plus"></i>
+</NavLink>
+
+<style>
+.recipe-create-btn-fixed {
+    position: fixed;
+    right: 32px;
+    bottom: 32px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #ffe082;
+    color: #222;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    z-index: 1000;
+}
+.recipe-create-btn-fixed:hover {
+    background: #ffd54f;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.recipe-create-btn-fixed i {
+    font-size: 2rem;
+    color: #222;
+}
+</style>
+
+<!-- Stile Campo ricerca e pulsante Create New -->
+<style>
+.recipe-search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1.2rem;
+    position: relative;
+}
+.recipe-search-input {
+    border: none;
+    border-radius: 18px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background: #f5f5f5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+    outline: none;
+    width: 220px;
+}
+.recipe-search-input:focus {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    background: #fff;
+}
+.recipe-search-btn,
+.recipe-create-btn {
+    border: none;
+    border-radius: 18px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    background: #ffe082;
+    color: #222;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.recipe-create-btn i {
+    font-size: 1.0rem;
+}
+.recipe-search-btn:hover,
+.recipe-create-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.recipe-search-clear {
+    position: absolute;
+    right: 110px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+}
+.recipe-search-clear:hover {
+    color: #ff3b30;
+}
+.recipe-empty-message {
+    text-align: center;
+    margin: 2.5rem 0;
+    font-size: 1.2rem;
+    color: #888;
+}
+.recipe-empty-reset {
+    color: #4e9af1;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 0.5rem;
+    font-weight: 500;
+}
+.recipe-empty-reset:hover {
+    color: #ff3b30;
+}
+</style>
+
 <div>
-    <form action="/recipes" data-enhance>
-        <input type="search" name="TitleFilter" />
-        <input type="submit" value="Search" />
+    <form class="recipe-search-form" @onsubmit="OnSearch">
+        <input type="search"
+               class="recipe-search-input"
+               placeholder="Cerca ricetta..."
+               @bind="searchText"
+               @bind:event="oninput" />
+        @if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            <button type="button" class="recipe-search-clear" @onclick="ClearSearch" title="Cancella filtro">
+                &#10005;
+            </button>
+        }
+        <!-- <input type="submit" value="Cerca" class="recipe-search-btn" /> -->
     </form>
 </div>
 
 <br />
 
 <!-- Griglia di card -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-    @foreach (var recipe in FilteredRecipes)
-    {
-		<RecipeCard Recipe="@recipe" />
-    }
-</div>
+@if (FilteredRecipes.Any())
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+        @foreach (var recipe in FilteredRecipes)
+        {
+            <RecipeCard Recipe="@recipe" />
+        }
+    </div>
+}
+else
+{
+    <div class="recipe-empty-message">
+        Nessuna ricetta trovata.
+        <span class="recipe-empty-reset" @onclick="ClearSearch">Mostra tutte</span>
+    </div>
+}
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
@@ -48,6 +184,8 @@
     private RatatouilleContext context = default!;
     private List<Recipe> recipes = new();
     private string? errorMessage;
+
+    private string searchText = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,10 +202,19 @@
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();
 
-    [SupplyParameterFromQuery]
-    private string? TitleFilter { get; set; }
+    private IEnumerable<Recipe> FilteredRecipes =>
+        string.IsNullOrWhiteSpace(searchText)
+            ? recipes
+            : recipes.Where(r => r.Title?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false);
 
-    private IEnumerable<Recipe> FilteredRecipes => string.IsNullOrWhiteSpace(TitleFilter)
-        ? recipes
-        : recipes.Where(r => r.Title.Contains(TitleFilter, StringComparison.OrdinalIgnoreCase));
+    private Task OnSearch()
+    {
+        // Non serve fare nulla, la ricerca è reattiva grazie a @bind
+        return Task.CompletedTask;
+    }
+
+    private void ClearSearch()
+    {
+        searchText = string.Empty;
+    }
 }

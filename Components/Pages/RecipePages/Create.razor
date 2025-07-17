@@ -4,51 +4,142 @@
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Create</PageTitle>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<h1>Create</h1>
+<PageTitle>Crea Ricetta</PageTitle>
 
-<h2>Recipe</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <EditForm method="post" Model="Recipe" OnValidSubmit="AddRecipe" FormName="create" Enhance>
-            <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="title" class="form-label">Title:</label> 
-                <InputText id="title" @bind-Value="Recipe.Title" class="form-control" /> 
-                <ValidationMessage For="() => Recipe.Title" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="description" class="form-label">Description:</label> 
-                <InputText id="description" @bind-Value="Recipe.Description" class="form-control" /> 
-                <ValidationMessage For="() => Recipe.Description" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="ingredients" class="form-label">Ingredients:</label> 
-                <InputText id="ingredients" @bind-Value="Recipe.Ingredients" class="form-control" /> 
-                <ValidationMessage For="() => Recipe.Ingredients" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="imageurl" class="form-label">ImageURL:</label> 
-                <InputText id="imageurl" @bind-Value="Recipe.ImageURL" class="form-control" /> 
-                <ValidationMessage For="() => Recipe.ImageURL" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
-        </EditForm>
+<style>
+.create-main {
+    max-width: 900px;
+    margin: 2rem auto 0 auto;
+    padding: 2.5rem 2rem 2rem 2rem;
+    background: #faf9f6;
+    border-radius: 24px;
+    min-height: 400px;
+    box-sizing: border-box;
+}
+.create-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.create-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    flex: 1;
+    word-break: break-word;
+}
+.create-back-btn {
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: #ffe082;
+    color: #222;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    margin-right: 1rem;
+}
+.create-back-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.create-label {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+    margin-top: 1.2rem;
+    display: block;
+}
+.create-input {
+    border: none;
+    border-radius: 18px;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    background: #f5f5f5;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+.create-input:focus {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    background: #fff;
+}
+.create-btn {
+    border: none;
+    border-radius: 18px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    background: #ffe082;
+    color: #222;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+}
+.create-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+</style>
+
+<div class="create-main">
+    <div class="create-title-row">
+        <div class="create-title">Crea Ricetta</div>
+        <a href="/recipes" class="create-back-btn" title="Indietro">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
     </div>
-</div>
-
-<div>
-    <a href="/recipes">Back to List</a>
+    <EditForm method="post" Model="Recipe" OnValidSubmit="AddRecipe" FormName="create" Enhance>
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert"/>
+        <div>
+            <label for="title" class="create-label">Titolo</label>
+            <InputText id="title" @bind-Value="Recipe.Title" class="create-input" />
+            <ValidationMessage For="() => Recipe.Title" class="text-danger" />
+        </div>
+        <div>
+            <label for="description" class="create-label">Descrizione</label>
+            <InputText id="description" @bind-Value="Recipe.Description" class="create-input" />
+            <ValidationMessage For="() => Recipe.Description" class="text-danger" />
+        </div>
+        <div>
+            <label for="ingredients" class="create-label">Ingredienti</label>
+            <InputText id="ingredients" @bind-Value="Recipe.Ingredients" class="create-input" />
+            <ValidationMessage For="() => Recipe.Ingredients" class="text-danger" />
+        </div>
+        <div>
+            <label for="imageurl" class="create-label">URL Immagine</label>
+            <InputText id="imageurl" @bind-Value="Recipe.ImageURL" class="create-input" />
+            <ValidationMessage For="() => Recipe.ImageURL" class="text-danger" />
+        </div>
+        <button type="submit" class="create-btn">
+            <i class="fa-solid fa-plus"></i> Crea
+        </button>
+    </EditForm>
 </div>
 
 @code {
     [SupplyParameterFromForm]
     private Recipe Recipe { get; set; } = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task AddRecipe()
     {
         using var context = DbFactory.CreateDbContext();

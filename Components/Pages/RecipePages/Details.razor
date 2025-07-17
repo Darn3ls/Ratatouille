@@ -4,34 +4,170 @@
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Details</PageTitle>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<h1>Details</h1>
+<PageTitle>Dettagli Ricetta</PageTitle>
 
-<div>
-    <h2>Recipe</h2>
-    <hr />
-    @if (recipe is null)
-    {
-        <p><em>Loading...</em></p>
+<style>
+.details-back-btn-wrapper {
+    max-width: 440px;
+    margin: auto;
+    position: absolute;
+    height: 44px;
+}
+.details-back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: #ffe082;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    z-index: 2;
+}
+.details-back-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+}
+.details-main {
+    max-width: 900px;
+    margin: 2rem auto 0 auto;
+    padding: 2.5rem 2rem 2rem 2rem;
+    background: #faf9f6;
+    border-radius: 24px;
+    min-height: 400px;
+    box-sizing: border-box;
+}
+.details-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.details-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    flex: 1;
+    word-break: break-word;
+}
+.details-actions-top {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.details-edit-btn,
+.details-delete-btn {
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    background: #ffe082;
+    color: #222;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+}
+.details-edit-btn:hover,
+.details-delete-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.details-delete-btn {
+    background: #ff3b30;
+    color: #fff;
+}
+.details-delete-btn:hover {
+    background: #ff6f61;
+}
+.details-img {
+    width: 100%;
+    max-width: 420px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.details-label {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+    margin-top: 1.2rem;
+}
+.details-value {
+    color: #444;
+    margin-bottom: 0.8rem;
+    font-size: 1.08rem;
+    white-space: pre-line;
+}
+    .details-title {
+        font-size: 1.3rem;
     }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">Title</dt>
-            <dd class="col-sm-10">@recipe.Title</dd>
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@recipe.Description</dd>
-            <dt class="col-sm-2">Ingredients</dt>
-            <dd class="col-sm-10">@recipe.Ingredients</dd>
-            <dt class="col-sm-2">ImageURL</dt>
-            <dd class="col-sm-10">@recipe.ImageURL</dd>
-        </dl>
-        <div>
-            <a href="@($"/recipes/edit?id={recipe.Id}")">Edit</a> |
-            <a href="@($"/recipes")">Back to List</a>
+    .details-img {
+        max-width: 100%;
+        height: 180px;
+    }
+}
+</style>
+
+@if (recipe is null)
+{
+    <p style="text-align:center;"><em>Caricamento...</em></p>
+}
+else
+{
+    <div class="details-back-btn-wrapper">
+        <a href="/recipes" class="details-back-btn" title="Indietro">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+    <div class="details-main">
+        <div class="details-title-row">
+            <div class="details-title">@recipe.Title</div>
+            <div class="details-actions-top">
+                <a href="@($"/recipes/edit?id={recipe.Id}")" class="details-edit-btn" title="Modifica">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+                <a href="@($"/recipes/delete?id={recipe.Id}")" class="details-delete-btn" title="Elimina">
+                    <i class="fa-solid fa-trash"></i>
+                </a>
+            </div>
         </div>
-    }
-</div>
+        @if (!string.IsNullOrWhiteSpace(recipe.ImageURL))
+        {
+            <img src="@recipe.ImageURL" alt="@recipe.Title" class="details-img" />
+        }
+        <div>
+            <div class="details-label">Descrizione</div>
+            <div class="details-value">@recipe.Description</div>
+        </div>
+        <div>
+            <div class="details-label">Ingredienti</div>
+            <div class="details-value">@recipe.Ingredients</div>
+        </div>
+    </div>
+}
 
 @code {
     private Recipe? recipe;

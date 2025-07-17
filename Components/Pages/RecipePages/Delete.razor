@@ -4,41 +4,177 @@
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Delete</PageTitle>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-<h1>Delete</h1>
+<PageTitle>Elimina Ricetta</PageTitle>
 
-<p>Are you sure you want to delete this?</p>
-<div>
-    <h2>Recipe</h2>
-    <hr />
-    @if (recipe is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">Title</dt>
-            <dd class="col-sm-10">@recipe.Title</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Description</dt>
-            <dd class="col-sm-10">@recipe.Description</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">Ingredients</dt>
-            <dd class="col-sm-10">@recipe.Ingredients</dd>
-        </dl>
-        <dl class="row">
-            <dt class="col-sm-2">ImageURL</dt>
-            <dd class="col-sm-10">@recipe.ImageURL</dd>
-        </dl>
+<style>
+.back-btn-wrapper {
+        max-width: 440px;
+        margin: auto;
+        position: absolute;
+        height: 44px;
+}
+.back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    background: #ffe082;
+    color: #222;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    z-index: 2;
+}
+.back-btn:hover {
+    background: #ffd54f;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.16);
+}
+.delete-main {
+    max-width: 900px;
+    margin: 2rem auto 0 auto;
+    padding: 2.5rem 2rem 2rem 2rem;
+    background: #faf9f6;
+    border-radius: 24px;
+    min-height: 400px;
+    box-sizing: border-box;
+}
+.delete-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.delete-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #222;
+    text-align: left;
+    flex: 1;
+    word-break: break-word;
+}
+.delete-confirm {
+    text-align: left;
+    font-size: 1.1rem;
+    color: #888;
+    margin-bottom: 1.2rem;
+}
+.delete-img {
+    width: 100%;
+    max-width: 420px;
+    height: 320px;
+    object-fit: cover;
+    border-radius: 18px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.delete-label {
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 0.3rem;
+    font-size: 1.1rem;
+    margin-top: 1.2rem;
+}
+.delete-value {
+    color: #444;
+    margin-bottom: 0.8rem;
+    font-size: 1.08rem;
+    white-space: pre-line;
+}
+.delete-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 2rem;
+}
+.delete-btn {
+    border: none;
+    border-radius: 18px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    background: #ff3b30;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.delete-btn:hover {
+    background: #ff6f61;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.delete-back-link {
+    color: #4e9af1;
+    text-decoration: underline;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: color 0.2s;
+}
+.delete-back-link:hover {
+    color: #ff3b30;
+}
+</style>
+
+@if (recipe is null)
+{
+    <p style="text-align:center;"><em>Caricamento...</em></p>
+}
+else
+{
+    <div class="back-btn-wrapper">
+        <a href="/recipes" class="back-btn" title="Indietro">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+    <div class="delete-main">
+        <div class="delete-title-row">
+            <div class="delete-title">Elimina Ricetta</div>
+        </div>
+        <div class="delete-confirm">
+            Sei sicuro di voler eliminare questa ricetta?
+        </div>
+        @if (!string.IsNullOrWhiteSpace(recipe.ImageURL))
+        {
+            <img src="@recipe.ImageURL" alt="@recipe.Title" class="delete-img" />
+        }
+        <div>
+            <div class="delete-label">Titolo</div>
+            <div class="delete-value">@recipe.Title</div>
+        </div>
+        <div>
+            <div class="delete-label">Descrizione</div>
+            <div class="delete-value">@recipe.Description</div>
+        </div>
+        <div>
+            <div class="delete-label">Ingredienti</div>
+            <div class="delete-value">@recipe.Ingredients</div>
+        </div>
         <EditForm method="post" Model="recipe" OnValidSubmit="DeleteRecipe" FormName="delete" Enhance>
-            <button type="submit" class="btn btn-danger" disabled="@(recipe is null)">Delete</button> |
-            <a href="/recipes">Back to List</a>
+            <div class="delete-actions">
+                <button type="submit" class="delete-btn" disabled="@(recipe is null)">
+                    <i class="fa-solid fa-trash"></i> Elimina
+                </button>
+                <a href="/recipes" class="delete-back-link">Torna alla lista</a>
+            </div>
         </EditForm>
-    }
-</div>
+    </div>
+}
 
 @code {
     private Recipe? recipe;
