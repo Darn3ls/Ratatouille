@@ -15,5 +15,7 @@ namespace Ratatouille.Data
         }
 
         public DbSet<Ratatouille.Models.Recipe> Recipe { get; set; } = default!;
+
+        public DbSet<User> Users { get; set; } = default!;
     }
 }

@@ -6,9 +6,11 @@
 @using Ratatouille.Components.Recipe
 @using Ratatouille.Models
 @using Ratatouille.Data
+@using Ratatouille.Services
 @implements IAsyncDisposable
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
-@inject NavigationManager Navigation  
+@inject NavigationManager Navigation
+@inject AuthService AuthService
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -194,6 +196,12 @@ else
     @code {  
         protected override async Task OnInitializedAsync()  
         {  
+            if (!AuthService.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/login", true);
+                return;
+            }
+
             // Se la route è "/" (root), effettua il redirect a "/recipes"  
             if (Navigation.Uri.EndsWith("/"))  
             {  

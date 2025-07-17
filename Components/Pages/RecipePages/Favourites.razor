@@ -5,9 +5,20 @@
 @using Ratatouille.Components.Recipe
 @using Ratatouille.Models
 @using Ratatouille.Data
+@using Ratatouille.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
 
 <h3>Favourites</h3>
 
 @code {
 
+    protected override async Task OnInitializedAsync()
+    {
+	    if (!AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login", true);
+            return;
+        }
+    }
 }

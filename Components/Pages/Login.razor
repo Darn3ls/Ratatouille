@@ -1,0 +1,130 @@
+﻿@page "/login"
+@using Microsoft.EntityFrameworkCore
+@using Ratatouille.Services
+@inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+
+<h3>Login</h3>
+
+<div class="login-main">
+    <div class="login-title">Accedi</div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+        <label class="edit-label" for="email">Email</label>
+        <InputText id="email" @bind-Value="loginModel.Email" class="edit-input" />
+
+        <label class="edit-label" for="password">Password</label>
+        <InputText id="password" @bind-Value="loginModel.Password" type="password" class="edit-input" />
+
+        <button type="submit" class="edit-btn">Accedi</button>
+    </EditForm>
+</div>
+
+<style>
+    .login-main {
+        max-width: 440px;
+        margin: 3rem auto 0 auto;
+        padding: 2.5rem 2rem 2rem 2rem;
+        background: #faf9f6;
+        border-radius: 24px;
+        box-sizing: border-box;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .login-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .edit-label {
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 0.3rem;
+        font-size: 1.1rem;
+        margin-top: 1.2rem;
+        display: block;
+    }
+
+    .edit-input {
+        border: none;
+        border-radius: 18px;
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        background: #f5f5f5;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: box-shadow 0.2s;
+        outline: none;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+        .edit-input:focus {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            background: #fff;
+        }
+
+    .edit-btn {
+        border: none;
+        border-radius: 18px;
+        padding: 0.6rem 1.4rem;
+        font-size: 1rem;
+        background: #ffe082;
+        color: #222;
+        font-weight: 500;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s;
+        display: block;
+        width: 100%;
+        margin-top: 1.5rem;
+    }
+
+        .edit-btn:hover {
+            background: #ffd54f;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        }
+</style>
+
+@code {
+    private LoginModel loginModel = new();
+    private string? errorMessage;
+
+@inject AuthService AuthService
+
+private async Task HandleLogin()
+    {
+        using var context = DbFactory.CreateDbContext();
+        var user = await context.Users
+            .FirstOrDefaultAsync(u => u.Email == loginModel.Email);
+
+        if (user == null || !VerifyPassword(loginModel.Password, user.PasswordHash))
+        {
+            errorMessage = "Username o password non validi.";
+            return;
+        }
+
+        AuthService.Login(user);
+        Navigation.NavigateTo("/recipes");
+    }
+
+    private bool VerifyPassword(string password, string passwordHash)
+    {
+        // Implementa qui la verifica dell'hash (es. BCrypt, SHA256, ecc.)
+        return passwordHash == password; // Solo per test, NON usare in produzione!
+    }
+
+    public class LoginModel
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}

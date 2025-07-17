@@ -1,7 +1,8 @@
-﻿using Ratatouille.Components;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Ratatouille.Components;
 using Ratatouille.Data;
+using Ratatouille.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,8 @@ builder.Services.AddDbContextFactory<RatatouilleContext>(options =>
 builder.Services.AddQuickGridEntityFrameworkAdapter();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddSingleton<AuthService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
