@@ -1,4 +1,5 @@
-﻿@page "/recipes"
+﻿@page "/"
+@page "/recipes"
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Ratatouille.Components
@@ -7,6 +8,7 @@
 @using Ratatouille.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<Ratatouille.Data.RatatouilleContext> DbFactory
+@inject NavigationManager Navigation  
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -181,26 +183,41 @@ else
 }
 
 @code {
+
     private RatatouilleContext context = default!;
     private List<Recipe> recipes = new();
     private string? errorMessage;
 
     private string searchText = string.Empty;
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            context = DbFactory.CreateDbContext();
-            recipes = await context.Recipe.ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = ex.Message;
-        }
+
+    @code {  
+        protected override async Task OnInitializedAsync()  
+        {  
+            // Se la route è "/" (root), effettua il redirect a "/recipes"  
+            if (Navigation.Uri.EndsWith("/"))  
+            {  
+                Navigation.NavigateTo("/recipes", true);  
+            }  
+            try  
+            {  
+                context = DbFactory.CreateDbContext();  
+                recipes = await context.Recipe.ToListAsync();  
+            }  
+            catch (Exception ex)  
+            {  
+                errorMessage = ex.Message;  
+            }  
+        }  
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        if (context != null)
+        {
+            await context.DisposeAsync();
+        }
+    }
 
     private IEnumerable<Recipe> FilteredRecipes =>
         string.IsNullOrWhiteSpace(searchText)
